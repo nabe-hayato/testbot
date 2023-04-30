@@ -46,7 +46,7 @@ class VoiceToTextBot(discord.Client):
 
         self.guild = message.guild  # 追加
 
-        if message.content.startswith('joinjoin'):
+        if message.content.startswith('$join'):
             channel = message.author.voice.channel
             if channel:
                 await channel.connect()
@@ -61,7 +61,7 @@ class VoiceToTextBot(discord.Client):
     async def on_voice_state_update(self, member, before, after):
         if before.channel is None and after.channel is not None:
             if after.channel.guild == self.guild:
-                text_channel = discord.utils.get(self.guild.text_channels, name="text-channel-name")
+                text_channel = discord.utils.get(self.guild.text_channels, name="Text-to-Speech")
                 if text_channel:
                     audio_source = MyAudioReceiver(self, text_channel)
                     voice_client = await after.channel.connect()
