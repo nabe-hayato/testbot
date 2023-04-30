@@ -7,6 +7,12 @@ WHISPER_API_KEY = os.environ['WHISPER_API_KEY']
 
 openai.api_key = WHISPER_API_KEY
 
+intents = discord.Intents.default()
+intents.typing = False
+intents.presences = False
+intents.voice_states = True
+intents.messages = True
+
 async def transcribe_audio(audio_data):
     response = openai.Audio.transcribe(data=audio_data)
     return response.get("transcript")
@@ -59,5 +65,5 @@ class VoiceToTextBot(discord.Client):
                     voice_client = await after.channel.connect()
                     voice_client.play(audio_source)
 
-client = VoiceToTextBot()
+client = VoiceToTextBot(intents=intents)
 client.run(TOKEN)
