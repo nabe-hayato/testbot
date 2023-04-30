@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const axios = require('axios');
 const ffmpeg = require('ffmpeg-static');
 const client = new Discord.Client({
-    intents: [Discord.Intents.FLAGS.Guilds, Discord.Intents.FLAGS.MessageContent]
+    intents: [Discord.Intents.FLAGS.Guilds, Discord.Intents.FLAGS.GuildMessageContent]
 });
 
 async function transcribe(connection) {
