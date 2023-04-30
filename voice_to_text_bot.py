@@ -41,10 +41,11 @@ class VoiceToTextBot(discord.Client):
         print(f'We have logged in as {self.user}')
 
     async def on_message(self, message):
+        print(f'Received message from {message.author}: {message.content}')
         if message.author == self.user:
             return
 
-        self.guild = message.guild  # 追加
+        self.guild = message.guild
 
         if message.content.startswith('$join'):
             channel = message.author.voice.channel
@@ -59,9 +60,10 @@ class VoiceToTextBot(discord.Client):
                     print(f"Bot disconnected from {vc.channel.name}")
 
     async def on_voice_state_update(self, member, before, after):
+        print(f'Voice state update for {member}: {before.channel} -> {after.channel}')
         if before.channel is None and after.channel is not None:
             if after.channel.guild == self.guild:
-                text_channel = discord.utils.get(self.guild.text_channels, name="Text-to-Speech")
+                text_channel = discord.utils.get(self.guild.text_channels, name="text-channel-name")
                 if text_channel:
                     audio_source = MyAudioReceiver(self, text_channel)
                     voice_client = await after.channel.connect()
