@@ -1,7 +1,9 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 const ffmpeg = require('ffmpeg-static');
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.Guilds, Discord.Intents.FLAGS.GuildMessages, Discord.Intents.FLAGS.GuildVoiceStates] });
+const client = new Discord.Client({
+    intents: [Discord.Intents.FLAGS.Guilds, Discord.Intents.FLAGS.GuildMessages]
+});
 
 async function transcribe(connection) {
     const receiver = connection.receiver.createStream(null, { mode: 'pcm', end: 'manual' });
