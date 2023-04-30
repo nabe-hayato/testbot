@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 const ffmpeg = require('ffmpeg-static');
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.Guilds, Discord.Intents.FLAGS.GuildMessages, Discord.Intents.FLAGS.GuildVoiceStates] });
 
 async function transcribe(connection) {
     const receiver = connection.receiver.createStream(null, { mode: 'pcm', end: 'manual' });
@@ -41,7 +41,7 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
     // ボイスチャンネルに参加するコマンド
     if (message.content === '!join') {
         if (message.member.voice.channel) {

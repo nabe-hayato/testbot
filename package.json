@@ -7,7 +7,7 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.6.0",
     "axios": "^0.21.1",
     "ffmpeg-static": "^4.4.0"
   },
