@@ -52,12 +52,17 @@ class VoiceToTextBot(discord.Client):
             if channel:
                 await channel.connect()
                 print(f"Bot connected to {channel.name}")
+            else:
+                await message.channel.send("You need to be in a voice channel to use this command.")
 
         if message.content.startswith('$leave'):
             for vc in self.voice_clients:
                 if vc.channel == message.author.voice.channel:
                     await vc.disconnect()
                     print(f"Bot disconnected from {vc.channel.name}")
+                    break
+            else:
+                await message.channel.send("Bot is not connected to your voice channel.")
 
     async def on_voice_state_update(self, member, before, after):
         print(f'Voice state update for {member}: {before.channel} -> {after.channel}')
