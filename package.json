@@ -1,0 +1,17 @@
+{
+  "name": "tastylingowords",
+  "version": "1.0.0",
+  "description": "Discord BOT Whisper API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "12.5.3",
+    "axios": "0.21.1",
+    "ffmpeg-static": "4.4.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
