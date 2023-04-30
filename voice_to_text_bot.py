@@ -44,6 +44,8 @@ class VoiceToTextBot(discord.Client):
         if message.author == self.user:
             return
 
+        self.guild = message.guild  # 追加
+
         if message.content.startswith('$join'):
             channel = message.author.voice.channel
             if channel:
