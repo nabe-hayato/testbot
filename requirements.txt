@@ -1,4 +1,0 @@
-discord.py
-openai
-nest_asyncio
-ffmpeg-python
