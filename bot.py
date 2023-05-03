@@ -59,5 +59,9 @@ class VoiceToTextBot(discord.Client):
                 voice_client = await after.channel.connect()
                 voice_client.play(audio_source)
 
-client = VoiceToTextBot()
+intents = discord.Intents.default()
+intents.voice_states = True
+intents.messages = True
+
+client = VoiceToTextBot(intents=intents)
 client.run(TOKEN)
