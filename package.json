@@ -1,17 +1,17 @@
 {
-  "name": "ringo",
+  "name": "discord-transcription-bot",
   "version": "1.0.0",
-  "description": "YOU",
+  "description": "A Discord bot that transcribes voice chat into text in real-time",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "discord.js": "^13.6.0",
-    "axios": "^0.21.1",
-    "ffmpeg-static": "^4.4.0"
+    "discord.js": "^13.1.0",
+    "@openai/whisper": "^1.0.0",
+    "dotenv": "^10.0.0"
   },
   "engines": {
-    "node": "16.x.x"
+    "node": "16.x"
   }
 }
