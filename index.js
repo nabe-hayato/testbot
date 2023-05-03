@@ -1,74 +1,38 @@
-const Discord = require('discord.js');
-const axios = require('axios');
-const ffmpeg = require('ffmpeg-static');
-const client = new Discord.Client();
+const fs = require('fs');
+const { Client, Collection, Intents } = require('discord.js');
+const { WhisperASR } = require('@openai/whisper');
 
-async function transcribe(connection) {
-  const receiver = connection.receiver.createStream(null, { mode: 'pcm', end: 'manual' });
-  const ffmpegProcess = require('child_process').spawn(ffmpeg, [
-    '-i', 'pipe:0',
-    '-f', 's16le',
-    '-acodec', 'pcm_s16le',
-    '-ar', '16000',
-    '-ac', '1',
-    'pipe:1',
-  ], { stdio: ['pipe', 'pipe', 'ignore'] });
+require('dotenv').config();
 
-  receiver.pipe(ffmpegProcess.stdin);
-  ffmpegProcess.stdout.pipe(process.stdout);
+const client = new Client({ intents: [Intents.FLAGS.Guilds, Intents.FLAGS.GuildVoiceStates, Intents.FLAGS.GuildMessages] });
+const whisperClient = new WhisperASR(process.env.WHISPER_API_KEY);
 
-  // 初期設定
-  const apiKey = process.env.OPENAI_API_KEY;
-  const apiUrl = 'https://api.openai.com/v1/engines/whisper/asr';
-  const headers = {
-    'Content-Type': 'audio/x-raw',
-    'Authorization': `Bearer ${apiKey}`,
-  };
+client.commands = new Collection();
 
-  try {
-    const response = await axios.post(apiUrl, ffmpegProcess.stdout, {
-      headers: headers,
-      responseType: 'json',
-    });
-    const transcription = response.data.choices[0].text.trim();
-    console.log('Transcription:', transcription);
-  } catch (error) {
-    console.error('Error:', error);
-  }
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  client.commands.set(command.data.name, command);
 }
 
-client.on('ready', () => {
+client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('message', async (message) => {
-  // ボイスチャンネルに参加するコマンド
-  if (message.content === '!join') {
-    if (message.member.voice.channel) {
-      const connection = await message.member.voice.channel.join();
-    } else {
-      message.reply('ボイスチャンネルに参加してください。');
-    }
-  }
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
 
-  // ボイスチャンネルから退出するコマンド
-  if (message.content === '!leave') {
-    if (message.guild.me.voice.channel) {
-      message.guild.me.voice.channel.leave();
-    } else {
-      message.reply('Botはボイスチャンネルに参加していません。');
-    }
-  }
+  const command = client.commands.get(interaction.commandName);
 
-  // ボイスチャンネルに参加して音声をテキストに変換
-  if (message.content === '!transcribe') {
-    if (message.member.voice.channel) {
-      const connection = await message.member.voice.channel.join();
-      transcribe(connection);
-    } else {
-      message.reply('ボイスチャンネルに参加してください。');
-    }
+  if (!command) return;
+
+  try {
+    await command.execute(interaction, whisperClient);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
   }
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(process.env.DISCORD_TOKEN);
