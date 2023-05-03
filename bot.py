@@ -7,12 +7,6 @@ WHISPER_API_KEY = os.environ['WHISPER_API_KEY']
 
 openai.api_key = WHISPER_API_KEY
 
-intents = discord.Intents.default()
-intents.typing = False
-intents.presences = False
-intents.voice_states = True
-intents.messages = True
-
 async def transcribe_audio(audio_data):
     response = openai.Audio.transcribe(data=audio_data)
     return response.get("transcript")
@@ -44,8 +38,6 @@ class VoiceToTextBot(discord.Client):
         if message.author == self.user:
             return
 
-        self.guild = message.guild  # 追加
-
         if message.content.startswith('$join'):
             channel = message.author.voice.channel
             if channel:
@@ -60,12 +52,12 @@ class VoiceToTextBot(discord.Client):
 
     async def on_voice_state_update(self, member, before, after):
         if before.channel is None and after.channel is not None:
-            if after.channel.guild == self.guild:
-                text_channel = discord.utils.get(self.guild.text_channels, name="text-channel-name")
-                if text_channel:
-                    audio_source = MyAudioReceiver(self, text_channel)
-                    voice_client = await after.channel.connect()
-                    voice_client.play(audio_source)
+            guild = after.channel.guild
+            text_channel = discord.utils.get(guild.text_channels, name="text-channel-name")
+            if text_channel:
+                audio_source = MyAudioReceiver(self, text_channel)
+                voice_client = await after.channel.connect()
+                voice_client.play(audio_source)
 
-client = VoiceToTextBot(intents=intents)
+client = VoiceToTextBot()
 client.run(TOKEN)
