@@ -38,13 +38,13 @@ class VoiceToTextBot(discord.Client):
         if message.author == self.user:
             return
 
-        if message.content.startswith('$join'):
+        if message.content.startswith('!join'):
             channel = message.author.voice.channel
             if channel:
                 await channel.connect()
                 print(f"Bot connected to {channel.name}")
 
-        if message.content.startswith('$leave'):
+        if message.content.startswith('!leave'):
             for vc in self.voice_clients:
                 if vc.channel == message.author.voice.channel:
                     await vc.disconnect()
